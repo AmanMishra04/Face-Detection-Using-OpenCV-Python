@@ -27,6 +27,20 @@ st.markdown("""
         color: #6366f1 !important; 
         text-transform: uppercase;
         letter-spacing: 1px;
+        margin-bottom: 10px !important;
+    }
+    
+    /* Reduce Vertical Gaps */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 1rem !important;
+    }
+    .element-container {
+        margin-bottom: 0.5rem !important;
+    }
+    hr {
+        margin: 1rem 0 !important;
+        opacity: 0.1;
     }
     
     /* System Cards */
@@ -34,8 +48,8 @@ st.markdown("""
         background: rgba(30, 41, 59, 0.7); 
         border: 1px solid rgba(99, 102, 241, 0.2) !important; 
         border-radius: 12px;
-        padding: 25px;
-        margin-bottom: 25px;
+        padding: 20px;
+        margin-bottom: 10px;
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
     
@@ -48,7 +62,7 @@ st.markdown("""
         font-size: 0.85rem;
         font-weight: 700;
         display: inline-block;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
     }
 
@@ -57,30 +71,30 @@ st.markdown("""
         background: #6366f1 !important; 
         color: white !important; 
         border-radius: 8px; 
-        height: 3.5rem; 
+        height: 3.2rem; 
         font-weight: 600; 
         width: 100%; 
         transition: all 0.3s;
-    }
-    .stButton>button:hover { 
-        background: #4f46e5 !important;
-        transform: translateY(-2px);
     }
     
     .badge {
         background: rgba(99, 102, 241, 0.1);
         color: #818cf8;
-        padding: 5px 12px;
+        padding: 4px 10px;
         border-radius: 6px;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         border: 1px solid rgba(99, 102, 241, 0.3);
     }
     
     /* Roadmap Item */
     .roadmap-item {
-        border-left: 3px solid #6366f1;
-        padding-left: 15px;
+        border-left: 2px solid #6366f1;
+        padding-left: 12px;
         margin-bottom: 15px;
+        background: rgba(99, 102, 241, 0.05);
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-radius: 0 6px 6px 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -139,25 +153,25 @@ def video_frame_callback(frame):
 # 5. WING 1: INTELLIGENCE DASHBOARD
 if mission_wing == "Intelligence Dashboard":
     st.markdown("<h1>👁️ AI VISION RECOGNITION</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 1.1rem; opacity: 0.8;'>Advanced Biometric Detection & Analysis Platform</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 1.1rem; opacity: 0.8; margin-top: -15px;'>Advanced Biometric Detection & Analysis Platform</p>", unsafe_allow_html=True)
     
     # Hero Section
     col_a, col_b = st.columns([1.2, 1])
     with col_a:
         hero = safe_image_load(HERO_IMG)
-        if hero: st.image(hero, use_container_width=True)
-        else: st.markdown("<div class='diag-box'><h3>VISION AI</h3><p>System Ready</p></div>", unsafe_allow_html=True)
+        if hero: st.image(hero, use_container_width=True, caption="Vision AI Acquisition Node")
+        else: st.markdown("<div class='diag-box'><h3>VISION AI</h3><p>System Ready. Initializing acquisition matrix...</p></div>", unsafe_allow_html=True)
     with col_b:
         st.markdown(f"""
         <div class='diag-box'>
             <h3>System Status</h3>
-            <p>A professional-grade computer vision suite optimized for high-fidelity detection.</p>
-            <div style='margin-bottom: 15px;'>
+            <p>A professional-grade computer vision suite optimized for high-fidelity detection. The engine is tuned for real-time biometric analysis.</p>
+            <div style='margin-bottom: 20px;'>
                 <span class='badge'>Engine: {ai_status}</span>
                 <span class='badge'>Latency: 35ms</span>
-                <span class='badge'>Sync: Active</span>
+                <span class='badge'>Protocol: Secure-Local</span>
             </div>
-            <p style='font-size: 0.9rem; color: #94a3b8;'>Created by <b>Aman Mishra</b></p>
+            <p style='font-size: 0.9rem; color: #94a3b8;'>Vision Authority: <b>Aman Mishra</b></p>
         </div>
         """, unsafe_allow_html=True)
         st.markdown("### 🏆 Core Advantages")
@@ -167,13 +181,11 @@ if mission_wing == "Intelligence Dashboard":
         - **📊 Multi-Stream**: Supports static assets, real-time webcam sync, and massive video archive forensics.
         """)
 
-    st.markdown("---")
-
     # Science & Tech Section
     col_x, col_y = st.columns([1, 1.2])
     with col_x:
         node = safe_image_load(NODE_IMG)
-        if node: st.image(node, use_container_width=True)
+        if node: st.image(node, use_container_width=True, caption="Biometric Data Mapping")
         st.markdown("### 🛠️ Technology Stack")
         st.markdown("""
         - **Python 3.10+**: Core logic and system integration.
@@ -196,13 +208,13 @@ if mission_wing == "Intelligence Dashboard":
         st.markdown("### 🗺️ Future Roadmap")
         st.markdown("""
         <div class='roadmap-item'>
-            <b>Q3 2026: Neural Landmarks</b><br><p style='font-size:0.8rem; opacity:0.8;'>Implementing 68-point facial landmark mapping for deep structure analysis.</p>
+            <b>Q3 2026: Neural Landmarks</b><br><p style='font-size:0.8rem; opacity:0.8;'>Implementing 68-point facial landmark mapping for deep structure analysis and alignment.</p>
         </div>
         <div class='roadmap-item'>
-            <b>Q4 2026: Emotion AI</b><br><p style='font-size:0.8rem; opacity:0.8;'>Real-time sentiment detection and emotional state classification.</p>
+            <b>Q4 2026: Emotion AI</b><br><p style='font-size:0.8rem; opacity:0.8;'>Real-time sentiment detection and emotional state classification through micro-expression tracking.</p>
         </div>
         <div class='roadmap-item'>
-            <b>2027: Neural Pose Estimation</b><br><p style='font-size:0.8rem; opacity:0.8;'>Full multi-entity pose and movement tracking in crowded environments.</p>
+            <b>2027: Neural Pose Estimation</b><br><p style='font-size:0.8rem; opacity:0.8;'>Full multi-entity pose and movement tracking for crowd analytics and behavior modeling.</p>
         </div>
         """, unsafe_allow_html=True)
 
