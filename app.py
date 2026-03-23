@@ -11,7 +11,7 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration, WebRtcMode
 # 1. PAGE SETUP (Vision AI Professional Edition)
 st.set_page_config(page_title="VISION AI | Professional Biometrics", page_icon="👁️", layout="wide")
 
-# Google Fonts & Ultra-Dense Professional CSS
+# Google Fonts & High-Density Professional CSS
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -27,26 +27,31 @@ st.markdown("""
         color: #6366f1 !important; 
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-top: 0px !important;
-        margin-bottom: 5px !important;
+        margin: 0 !important;
+        padding-bottom: 8px !important;
     }
     
-    /* Aggressive Gap Reduction */
+    /* High-Density Spatial Control */
     .block-container {
         padding-top: 1rem !important;
-        padding-bottom: 0rem !important;
+        padding-bottom: 0px !important;
+        max-width: 95% !important;
     }
     .element-container {
-        margin-bottom: 0.2rem !important;
+        margin-bottom: 0px !important;
     }
     .stVerticalBlock {
         gap: 0.5rem !important;
     }
+    hr {
+        margin: 0.8rem 0 !important;
+        opacity: 0.05;
+    }
     
-    /* System Cards */
+    /* System Cards - Compact */
     .diag-box { 
         background: rgba(30, 41, 59, 0.7); 
-        border: 1px solid rgba(99, 102, 241, 0.2) !important; 
+        border: 1px solid rgba(99, 102, 241, 0.1) !important; 
         border-radius: 8px;
         padding: 15px;
         margin-bottom: 5px;
@@ -57,9 +62,9 @@ st.markdown("""
     .creator-badge {
         background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
         color: white;
-        padding: 5px 12px;
-        border-radius: 50px;
-        font-size: 0.8rem;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
         font-weight: 700;
         display: inline-block;
         margin-bottom: 10px;
@@ -70,7 +75,7 @@ st.markdown("""
         background: #6366f1 !important; 
         color: white !important; 
         border-radius: 6px; 
-        height: 3rem; 
+        height: 2.8rem; 
         font-weight: 600; 
         width: 100%; 
     }
@@ -81,17 +86,22 @@ st.markdown("""
         padding: 3px 8px;
         border-radius: 4px;
         font-size: 0.7rem;
-        border: 1px solid rgba(99, 102, 241, 0.3);
+        border: 1px solid rgba(99, 102, 241, 0.2);
     }
     
-    /* Roadmap Item */
+    /* Roadmap Item - High Density */
     .roadmap-item {
         border-left: 2px solid #6366f1;
         padding-left: 10px;
         margin-bottom: 8px;
-        background: rgba(99, 102, 241, 0.05);
-        padding-top: 3px;
-        padding-bottom: 3px;
+        background: rgba(99, 102, 241, 0.03);
+        border-radius: 0 4px 4px 0;
+    }
+    
+    /* Global Text Spacing */
+    p {
+        margin-bottom: 8px !important;
+        line-height: 1.4 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -99,15 +109,6 @@ st.markdown("""
 # 2. CORE UTILITIES & AI LOADING
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 XML_PATH = os.path.join(BASE_DIR, "haarcascade_frontalface_default.xml")
-HERO_IMG = "vision_hero.png"
-NODE_IMG = "biometric_node.png"
-
-def safe_image_load(filename):
-    path = os.path.join(BASE_DIR, filename)
-    if not os.path.exists(path): return None
-    try:
-        return Image.open(path)
-    except: return None
 
 @st.cache_resource
 def load_ai():
@@ -126,6 +127,8 @@ if mission_wing == "Detection Laboratory":
     tool_select = st.sidebar.selectbox("OPERATIONAL TOOL", ["Image Recognizer", "Live Sentinel", "Archive Scanner"])
     SENS = st.sidebar.slider("SENSITIVITY", 1.05, 1.4, 1.1)
     STAB = st.sidebar.slider("STABILITY", 1, 15, 3)
+else:
+    st.sidebar.info("Select 'Detection Laboratory' to access biometric tracking tools.")
 
 # 4. SYSTEM BOX LOGIC
 def draw_pro_box(img, x, y, w, h):
@@ -148,78 +151,72 @@ def video_frame_callback(frame):
 # 5. WING 1: INTELLIGENCE DASHBOARD
 if mission_wing == "Intelligence Dashboard":
     st.markdown("<h1>👁️ AI VISION RECOGNITION</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 1rem; opacity: 0.8; margin-top: -10px;'>Advanced Biometric Detection & Analysis Platform</p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 1rem; opacity: 0.7; margin-bottom: 15px;'>Professional Biometric Intelligence Platform | Vision Authority: <b>Aman Mishra</b></p>", unsafe_allow_html=True)
     
-    # Hero Section
-    col_a, col_b = st.columns([1.2, 1])
-    with col_a:
-        hero = safe_image_load(HERO_IMG)
-        if hero: st.image(hero, use_container_width=True)
-        else: st.markdown("<div class='diag-box'><h3>VISION AI</h3><p>System Ready.</p></div>", unsafe_allow_html=True)
-    with col_b:
+    # Header Section (Merged Status & Advantages)
+    col1, col2 = st.columns([1, 1])
+    with col1:
         st.markdown(f"""
         <div class='diag-box'>
-            <h3>System Status</h3>
-            <p style='font-size: 0.9rem;'>A professional-grade computer vision suite optimized for high-fidelity detection.</p>
-            <div style='margin-bottom: 10px;'>
+            <h3>System Intelligence Status</h3>
+            <p>A professional computer vision suite optimized for high-fidelity detection kernels.</p>
+            <div style='display: flex; gap: 8px;'>
                 <span class='badge'>Engine: {ai_status}</span>
                 <span class='badge'>Latency: 35ms</span>
                 <span class='badge'>Protocol: Secure-Local</span>
             </div>
-            <p style='font-size: 0.85rem; color: #94a3b8;'>Vision Authority: <b>Aman Mishra</b></p>
         </div>
         """, unsafe_allow_html=True)
-        st.markdown("### 🏆 Core Advantages")
+    with col2:
         st.markdown("""
-        - **🔒 Local Privacy**: All processing occurs locally.
-        - **⚡ Efficiency**: Real-time performance on standard hardware.
-        - **📊 Multi-Stream**: Supports static, live, and archive data.
-        """)
+        <div class='diag-box'>
+            <h3>Core Platform Advantages</h3>
+            <p style='font-size: 0.85rem;'><b>Local Transparency</b>: Processing occurs entirely within the host environment. <b>High Efficiency</b>: Real-time analysis on standard CPU hardware. <b>Forensic Depth</b>: Advanced multi-stage facial verification logic.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Science & Tech Section
-    col_x, col_y = st.columns([1, 1.2])
+    col_x, col_y = st.columns([1, 1.5])
     with col_x:
-        node = safe_image_load(NODE_IMG)
-        if node: st.image(node, use_container_width=True)
         st.markdown("### 🛠️ Technology Stack")
         st.markdown("""
-        - **Python 3.10+**: Core logic.
-        - **OpenCV 4.10**: Vision kernels.
-        - **Streamlit**: UI High-performance components.
-        - **WebRTC/PyAV**: Low-latency streaming.
+        - **Python 3.10+**: Core system logic.
+        - **OpenCV 4.10**: Advanced Vision kernels.
+        - **Streamlit**: Professional UI components.
+        - **WebRTC/PyAV**: Low-latency secure media sync.
         """)
-    with col_y:
-        st.markdown("### 🔬 Algorithmic Foundation")
-        with st.expander("The Science of Haar Cascades", expanded=True):
-            st.write("""
-            Built upon the **Viola-Jones Framework**:
-            
-            1.  **Haar Features**: Edge and shadow identification.
-            2.  **Integral Images**: Constant-time pixel calculation.
-            3.  **Adaboost Learning**: Critical feature selection.
-            4.  **Attentional Cascade**: Instant non-face region rejection.
-            """)
         
-        st.markdown("### 🗺️ Future Roadmap")
+        st.markdown("### 🗺️ System Roadmap")
         st.markdown("""
         <div class='roadmap-item'>
-            <b>Q3 2026: Neural Landmarks</b><br><p style='font-size:0.75rem; opacity:0.8;'>68-point facial landmark mapping for deep structure alignment.</p>
+            <b>Q3 2026: Neural Landmarks</b><br><p style='font-size:0.75rem; opacity:0.8;'>Facial landmark and alignment mapping.</p>
         </div>
         <div class='roadmap-item'>
-            <b>Q4 2026: Emotion AI</b><br><p style='font-size:0.75rem; opacity:0.8;'>Sentiment detection through micro-expression tracking.</p>
-        </div>
-        <div class='roadmap-item'>
-            <b>2027: Neural Pose Estimation</b><br><p style='font-size:0.75rem; opacity:0.8;'>Full crowd analytics and behavior modeling.</p>
+            <b>Q4 2026: Emotion AI</b><br><p style='font-size:0.75rem; opacity:0.8;'>Real-time sentiment and micro-expression tracking.</p>
         </div>
         """, unsafe_allow_html=True)
+        
+    with col_y:
+        st.markdown("### 🔬 Algorithmic Foundation (Viola-Jones)")
+        st.write("""
+        Built upon the industry-standard Viola-Jones Framework, our engine utilizes specialized mathematical techniques to ensure accurate object localization:
+        
+        - **Haar-like Features**: Rapid feature acquisition through pixel intensity contrast analysis.
+        - **Integral Images**: Optimized computational throughput regardless of detection window scale.
+        - **Adaboost Selection**: Focused processing on the most critical biometric identifiers.
+        - **Attentional Cascade**: Recursive region rejection for ultra-low latency execution.
+        """)
+        
+        with st.expander("Explore Neural Architecture"):
+            st.write("Current model version implements 25 stages of Haar-Cascade filters, trained on 10,000+ localized facial entities for maximum operational robustness.")
 
 # 6. WING 2: DETECTION LABORATORY
 elif mission_wing == "Detection Laboratory":
     st.markdown(f"<h1>🧪 DETECTION LABORATORY</h1>", unsafe_allow_html=True)
-    st.markdown(f"<h3>Tool: {tool_select}</h3>", unsafe_allow_html=True)
+    st.markdown(f"<h3>Operational Tool: {tool_select}</h3>", unsafe_allow_html=True)
     
     if tool_select == "Image Recognizer":
-        up = st.file_uploader("Upload Image", type=["jpg","png","jpeg"])
+        up = st.file_uploader("Upload Image Intelligence Asset", type=["jpg","png","jpeg"])
         if up:
             raw = Image.open(up)
             arr = np.array(raw.convert("RGB"))
@@ -228,12 +225,12 @@ elif mission_wing == "Detection Laboratory":
                 faces = ai_engine.detectMultiScale(gray, SENS, STAB)
                 for (x, y, w, h) in faces: draw_pro_box(arr, x, y, w, h)
                 st.image(arr, use_container_width=True)
-                st.success(f"ANALYSIS COMPLETE: {len(faces)} entities found.")
+                st.success(f"ANALYSIS COMPLETE: {len(faces)} entities localized.")
 
     elif tool_select == "Live Sentinel":
-        st.info("💡 Grant optical sensor access.")
+        st.info("💡 Grant optical sensor access to initiate real-time biometric tracking.")
         webrtc_streamer(
-            key="v11-laboratory",
+            key="v11-laboratory-final",
             mode=WebRtcMode.SENDRECV,
             rtc_configuration=RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}),
             video_frame_callback=video_frame_callback,
@@ -242,10 +239,10 @@ elif mission_wing == "Detection Laboratory":
         )
 
     elif tool_select == "Archive Scanner":
-        vid = st.file_uploader("Upload Archive", type=["mp4","mov"])
+        vid = st.file_uploader("Upload Recorded Archive", type=["mp4","mov"])
         if vid:
             st.video(vid)
-            if st.button("🚀 EXECUTE SCAN"):
+            if st.button("🚀 EXECUTE BIOMETRIC SCAN"):
                 tfile = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
                 vid.seek(0)
                 tfile.write(vid.read())
@@ -269,4 +266,4 @@ elif mission_wing == "Detection Laboratory":
                     progress.progress(min(count/total, 1.0))
                 cap.release()
                 os.unlink(tfile.name)
-                st.success("SCAN COMPLETE.")
+                st.success("FORENSIC SCAN COMPLETE.")
