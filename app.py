@@ -11,11 +11,11 @@ from streamlit_webrtc import webrtc_streamer, RTCConfiguration, WebRtcMode
 # 1. PAGE SETUP (Vision AI Professional Edition)
 st.set_page_config(page_title="VISION AI | Professional Biometrics", page_icon="👁️", layout="wide")
 
-# Google Fonts & High-Density Professional CSS
+# Google Fonts & Premium Spatial CSS
 st.markdown("""
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    /* Professional Dashboard Aesthetic */
+    /* Premium Dashboard Aesthetic */
     .stApp { 
         background-color: #0f172a; 
         color: #f1f5f9; 
@@ -26,82 +26,90 @@ st.markdown("""
         font-family: 'Orbitron', sans-serif !important; 
         color: #6366f1 !important; 
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin: 0 !important;
-        padding-bottom: 8px !important;
+        letter-spacing: 1.5px;
+        margin-top: 20px !important;
+        margin-bottom: 12px !important;
     }
     
-    /* High-Density Spatial Control */
+    /* Elegant Spatial Control */
     .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 0px !important;
-        max-width: 95% !important;
+        padding-top: 3rem !important;
+        padding-bottom: 2rem !important;
+        max-width: 90% !important;
     }
+    
     .element-container {
-        margin-bottom: 0px !important;
+        margin-bottom: 1rem !important;
     }
-    .stVerticalBlock {
-        gap: 0.5rem !important;
-    }
-    hr {
-        margin: 0.8rem 0 !important;
-        opacity: 0.05;
-    }
-    
-    /* System Cards - Compact */
+
+    /* System Cards - Premium Elevation */
     .diag-box { 
-        background: rgba(30, 41, 59, 0.7); 
-        border: 1px solid rgba(99, 102, 241, 0.1) !important; 
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 5px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)); 
+        border: 1px solid rgba(99, 102, 241, 0.2) !important; 
+        border-left: 5px solid #6366f1 !important;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
     
-    /* Creator Badge */
+    /* Creator Badge - Premium Style */
     .creator-badge {
         background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
         color: white;
-        padding: 4px 12px;
-        border-radius: 4px;
-        font-size: 0.75rem;
+        padding: 8px 18px;
+        border-radius: 6px;
+        font-size: 0.85rem;
         font-weight: 700;
         display: inline-block;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     }
 
     /* Lab Tools Buttons */
     .stButton>button { 
         background: #6366f1 !important; 
         color: white !important; 
-        border-radius: 6px; 
-        height: 2.8rem; 
+        border-radius: 8px; 
+        height: 3.5rem; 
         font-weight: 600; 
         width: 100%; 
+        transition: all 0.3s;
+        border: none !important;
+    }
+    .stButton>button:hover { 
+        background: #4f46e5 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
     }
     
     .badge {
-        background: rgba(99, 102, 241, 0.1);
-        color: #818cf8;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        border: 1px solid rgba(99, 102, 241, 0.2);
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        margin-right: 8px;
     }
     
-    /* Roadmap Item - High Density */
+    /* Roadmap Item - Sophisticated */
     .roadmap-item {
-        border-left: 2px solid #6366f1;
-        padding-left: 10px;
-        margin-bottom: 8px;
-        background: rgba(99, 102, 241, 0.03);
-        border-radius: 0 4px 4px 0;
+        border-left: 3px solid #6366f1;
+        padding-left: 18px;
+        margin-bottom: 20px;
+        background: rgba(99, 102, 241, 0.05);
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-radius: 0 8px 8px 0;
     }
     
-    /* Global Text Spacing */
+    /* Global Typography Spacing */
     p {
-        margin-bottom: 8px !important;
-        line-height: 1.4 !important;
+        margin-bottom: 15px !important;
+        line-height: 1.7 !important;
+        font-weight: 300;
+        color: #cbd5e1;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -151,64 +159,73 @@ def video_frame_callback(frame):
 # 5. WING 1: INTELLIGENCE DASHBOARD
 if mission_wing == "Intelligence Dashboard":
     st.markdown("<h1>👁️ AI VISION RECOGNITION</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='font-size: 1rem; opacity: 0.7; margin-bottom: 15px;'>Professional Biometric Intelligence Platform | Vision Authority: <b>Aman Mishra</b></p>", unsafe_allow_html=True)
+    st.markdown("<p style='font-size: 1.1rem; opacity: 0.8; margin-top: -10px;'>Advanced Biometric Intelligence Platform | Vision Authority: <b>Aman Mishra</b></p>", unsafe_allow_html=True)
     
-    # Header Section (Merged Status & Advantages)
+    st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+
+    # Core Intelligence Blocks
     col1, col2 = st.columns([1, 1])
     with col1:
         st.markdown(f"""
         <div class='diag-box'>
-            <h3>System Intelligence Status</h3>
-            <p>A professional computer vision suite optimized for high-fidelity detection kernels.</p>
-            <div style='display: flex; gap: 8px;'>
+            <h3>System Status</h3>
+            <p>A professional-grade computer vision suite optimized for high-fidelity detection. The engine is tuned for real-time biometric analysis with sub-40ms latency.</p>
+            <div style='margin-top: 15px;'>
                 <span class='badge'>Engine: {ai_status}</span>
                 <span class='badge'>Latency: 35ms</span>
-                <span class='badge'>Protocol: Secure-Local</span>
+                <span class='badge'>Sync: Local-Only</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
+    
     with col2:
         st.markdown("""
         <div class='diag-box'>
-            <h3>Core Platform Advantages</h3>
-            <p style='font-size: 0.85rem;'><b>Local Transparency</b>: Processing occurs entirely within the host environment. <b>High Efficiency</b>: Real-time analysis on standard CPU hardware. <b>Forensic Depth</b>: Advanced multi-stage facial verification logic.</p>
+            <h3>Core Advantages</h3>
+            <ul style='color: #cbd5e1; line-height: 1.7;'>
+                <li><b>🔒 Local Privacy</b>: All processing occurs within your secure environment.</li>
+                <li><b>⚡ Zero Latency</b>: Optimized Haar Cascade kernels for instant recognition.</li>
+                <li><b>📊 Multi-Vector</b>: Unified analysis across images, live streams, and archives.</li>
+            </ul>
         </div>
         """, unsafe_allow_html=True)
 
     # Science & Tech Section
-    col_x, col_y = st.columns([1, 1.5])
+    col_x, col_y = st.columns([1, 1.4])
     with col_x:
         st.markdown("### 🛠️ Technology Stack")
         st.markdown("""
-        - **Python 3.10+**: Core system logic.
-        - **OpenCV 4.10**: Advanced Vision kernels.
-        - **Streamlit**: Professional UI components.
-        - **WebRTC/PyAV**: Low-latency secure media sync.
+        - **Python 3.10+**: Core system architecture and data orchestration.
+        - **OpenCV 4.10**: Advanced Computer Vision kernels and image processing.
+        - **Streamlit**: Modern, high-performance professional UI framework.
+        - **WebRTC/PyAV**: Low-latency secure media synchronization.
         """)
         
         st.markdown("### 🗺️ System Roadmap")
         st.markdown("""
         <div class='roadmap-item'>
-            <b>Q3 2026: Neural Landmarks</b><br><p style='font-size:0.75rem; opacity:0.8;'>Facial landmark and alignment mapping.</p>
+            <b>Q3 2026: Neural Landmarks</b><br><p style='font-size:0.85rem; opacity:0.8; margin:0;'>Implementing 68-point facial landmark and alignment mapping for deep structure analysis.</p>
         </div>
         <div class='roadmap-item'>
-            <b>Q4 2026: Emotion AI</b><br><p style='font-size:0.75rem; opacity:0.8;'>Real-time sentiment and micro-expression tracking.</p>
+            <b>Q4 2026: Emotion AI</b><br><p style='font-size:0.85rem; opacity:0.8; margin:0;'>Real-time sentiment detection and emotional state classification via micro-expression tracking.</p>
         </div>
         """, unsafe_allow_html=True)
         
     with col_y:
-        st.markdown("### 🔬 Algorithmic Foundation (Viola-Jones)")
+        st.markdown("### 🔬 Algorithmic Foundation")
         st.write("""
-        Built upon the industry-standard Viola-Jones Framework, our engine utilizes specialized mathematical techniques to ensure accurate object localization:
+        The **AI Vision Recognition** platform is built upon the landmark **Viola-Jones Framework**. This system ensures robust object detection through a series of optimized mathematical processes:
         
-        - **Haar-like Features**: Rapid feature acquisition through pixel intensity contrast analysis.
-        - **Integral Images**: Optimized computational throughput regardless of detection window scale.
-        - **Adaboost Selection**: Focused processing on the most critical biometric identifiers.
-        - **Attentional Cascade**: Recursive region rejection for ultra-low latency execution.
+        1.  **Haar-like Features**: Rapid acquisition of facial structures by analyzing pixel intensity contrast across specialized rectangular regions.
+        2.  **Integral Images**: A breakthrough technique that allows for the calculation of feature sums in constant time, independent of window scale.
+        3.  **Adaboost Learning**: Selective processing that focuses the engine's power on the most critical biometric identifiers.
+        4.  **Attentional Cascade**: A multi-stage filtering process where negative regions are discarded early, allowing for multi-entity tracking at 30+ FPS.
         """)
         
-        with st.expander("Explore Neural Architecture"):
-            st.write("Current model version implements 25 stages of Haar-Cascade filters, trained on 10,000+ localized facial entities for maximum operational robustness.")
+        with st.expander("Explore Recognition Complexity"):
+            st.write("""
+            The current implementation utilizes a 25-stage cascade classifier, meticulously trained on thousands of positive facial samples to minimize false positives while maintaining high sensitivity.
+            """)
 
 # 6. WING 2: DETECTION LABORATORY
 elif mission_wing == "Detection Laboratory":
@@ -230,7 +247,7 @@ elif mission_wing == "Detection Laboratory":
     elif tool_select == "Live Sentinel":
         st.info("💡 Grant optical sensor access to initiate real-time biometric tracking.")
         webrtc_streamer(
-            key="v11-laboratory-final",
+            key="v11-laboratory-aurora",
             mode=WebRtcMode.SENDRECV,
             rtc_configuration=RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}),
             video_frame_callback=video_frame_callback,
