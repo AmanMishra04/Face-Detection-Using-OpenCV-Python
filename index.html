@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision | Face Detection HUD</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-grid"></div>
+    <div class="glow-effect"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="pulse"></span>
+                <h1>AI VISION <span class="v-tag">v2.0</span></h1>
+            </div>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="label">ENGINE:</span>
+                    <span class="value" id="engine-status">INITIALIZING...</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">CORES:</span>
+                    <span class="value">ACTIVE</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="viewport-section">
+                <div class="video-container">
+                    <video id="webcam" autoplay playsinline muted></video>
+                    <canvas id="overlay"></canvas>
+                    <div class="hud-frame">
+                        <div class="corner tl"></div>
+                        <div class="corner tr"></div>
+                        <div class="corner bl"></div>
+                        <div class="corner br"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                    <div id="detection-info" class="detection-info">
+                        NO TARGETS DETECTED
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="start-btn" class="btn primary">ENGAGE NEURAL TRACKING</button>
+                    <button id="stop-btn" class="btn secondary">TERMINATE</button>
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="card params">
+                    <h3>SYSTEM PARAMETERS</h3>
+                    <div class="param-group">
+                        <label>SENSITIVITY (SCALE)</label>
+                        <input type="range" id="scale-factor" min="1.05" max="1.5" step="0.05" value="1.1">
+                        <span class="val-display" id="scale-val">1.1</span>
+                    </div>
+                    <div class="param-group">
+                        <label>MIN NEIGHBORS</label>
+                        <input type="range" id="min-neighbors" min="3" max="10" step="1" value="5">
+                        <span class="val-display" id="min-val">5</span>
+                    </div>
+                </div>
+
+                <div class="card telemetry">
+                    <h3>LIVE TELEMETRY</h3>
+                    <div class="telemetry-grid">
+                        <div class="tel-item">
+                            <span class="label">LATENCY</span>
+                            <span class="value" id="latency-val">0ms</span>
+                        </div>
+                        <div class="tel-item">
+                            <span class="label">TARGETS</span>
+                            <span class="value" id="target-count">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card logs">
+                    <h3>SYSTEM LOGS</h3>
+                    <div id="log-list" class="log-list">
+                        <p class="log-entry">> Booting AI Vision Engine...</p>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
