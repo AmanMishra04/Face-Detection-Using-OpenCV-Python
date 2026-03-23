@@ -7,27 +7,27 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.x-green.svg)](https://opencv.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A professional-grade **AI Recognition System** powered by **OpenCV** and **Haar Cascade Multi-Stage Classifiers**. This platform provides high-fidelity biometric tracking across static images, video archives, and live webcam feeds with a sophisticated "Simple Tech" interface.
+A professional-grade **AI Recognition System** developed by **Aman Mishra**. This platform features a dual-wing architecture: an **Intelligence Dashboard** for technical insights and a **Detection Laboratory** for real-time biometric operations across images, video archives, and live webcam feeds.
 
 ---
 
 ## 🚀 Key Features
 
-*   **🎯 Professional Recognition**: Accurate face detection with minimal, non-intrusive bounding boxes.
-*   **💎 Clean Tech Interface**: A sophisticated UI designed with Indigo/Slate palettes and professional AI visualizations.
-*   **⚡ High-Speed Analysis**: Optimized scanning engine for rapid video forensics and zero-lag live streams.
-*   **🔬 Vision Hub**: Integrated deep-dive into the Haar Cascade and Viola-Jones algorithms.
-*   **📹 Live Operational Sync**: Real-time biometric streaming with stable WebRTC connectivity.
+*   **🏰 Intelligence Dashboard**: Deep-dives into the Haar Cascade and Viola-Jones algorithms, tech stack, and future system roadmap.
+*   **🧪 Detection Laboratory**: Unified mission control for high-fidelity Image, Live, and Video recognition tools.
+*   **⚡ Zero-Lag High-Fidelity**: Optimized scanning engine for rapid video forensics and stable WebRTC live streams.
+*   **🔒 Privacy-First**: All biometric processing occurs locally within the environment.
+*   **🎯 Professional Branding**: Sophisticated Indigo/Slate interface with high-fidelity AI visualizations.
 
 ---
 
 ## 🛠️ Technology Stack
 
 - **Core Engine**: `Python 3.10+`
-- **Interface**: `Streamlit`
+- **Dashboards**: `Streamlit`
 - **Computer Vision**: `OpenCV (opencv-python)`
 - **WebRTC**: `Streamlit-WebRTC`
-- **Model**: `Haar Cascade Frontal Face Classifier`
+- **Algorithms**: `Haar Cascade Multi-Stage Classifiers` (Viola-Jones Framework)
 
 ---
 
@@ -59,14 +59,21 @@ Pre-configured for **Hugging Face Spaces** and **Streamlit Cloud** with **1GB** 
 
 ---
 
-## 🔬 Scientific Foundation
-The system implements the **Viola-Jones Framework**, utilizing **Integral Images** and **Cascaded Classifiers** to achieve real-time performance. This allows the AI to reject non-face regions in milliseconds, ensuring high throughput and accuracy.
+## 🔭 The Science
+The system implements the **Viola-Jones Framework**, using **Haar Cascades** to perform rapid feature-based detection. By utilizing **Integral Images** and **Cascaded Classifiers**, the system achieves industry-standard real-time performance safely and efficiently.
+
+---
+
+## 🗺️ Roadmap
+- **Q3 2026**: Neural Landmarks (68-point facial mapping).
+- **Q4 2026**: Emotion AI (Sentiment classification).
+- **2027**: Neural Pose Estimation (Movement tracking).
 
 ---
 
 ## 🤝 Community & Support
-Contributions to the vision logic or UI refinements are welcome. Feel free to open a Pull Request.
+Contributions are welcome! Feel free to fork and PR for new tactical overlays or detection kernels.
 
 ---
 
-<p align="center">Developed by <a href="https://github.com/AmanMishra04">Aman Mishra</a></p>
+<p align="center">Created by <a href="https://github.com/AmanMishra04">Aman Mishra</a></p>
