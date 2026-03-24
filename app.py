@@ -140,7 +140,7 @@ if mission_wing == "Detection Laboratory":
     st.sidebar.markdown("---")
     tool_select = st.sidebar.selectbox("OPERATIONAL TOOL", ["Image Recognizer", "Live Sentinel", "Archive Scanner"])
     SENS = st.sidebar.slider("SENSITIVITY", 1.05, 1.4, 1.1)
-    STAB = st.sidebar.slider("STABILITY", 1, 15, 3)
+    STAB = st.sidebar.slider("STABILITY", 1, 15, 7)
 else:
     st.sidebar.info("Select 'Detection Laboratory' to access biometric tracking tools.")
 
@@ -180,7 +180,7 @@ def video_frame_callback(frame):
     img = frame.to_ndarray(format="bgr24")
     if ai_engine is not None:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        detections = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(30, 30))
+        detections = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(60, 60))
         for (fx, fy, fw, fh) in detections:
             gender = analyze_gender(img, fx, fy, fw, fh)
             draw_pro_box(img, fx, fy, fw, fh, gender.upper())
@@ -270,7 +270,7 @@ elif mission_wing == "Detection Laboratory":
             bgr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2BGR)
             if ai_engine:
                 gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-                faces = ai_engine.detectMultiScale(gray, SENS, STAB)
+                faces = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(60, 60))
                 for (x, y, w, h) in faces:
                     gender = analyze_gender(bgr, x, y, w, h)
                     draw_pro_box(bgr, x, y, w, h, gender.upper())
@@ -310,7 +310,7 @@ elif mission_wing == "Detection Laboratory":
                     frame_s = cv2.resize(frame, (480, int(h * 480 / w)))
                     if ai_engine:
                         gray = cv2.cvtColor(frame_s, cv2.COLOR_BGR2GRAY)
-                        fcs = ai_engine.detectMultiScale(gray, SENS, STAB)
+                        fcs = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(50, 50))
                         for (fx, fy, fw, fh) in fcs:
                             gender = analyze_gender(frame_s, fx, fy, fw, fh)
                             draw_pro_box(frame_s, fx, fy, fw, fh, gender.upper())
