@@ -6,8 +6,6 @@ import os
 import tempfile
 import time
 import threading
-import av
-from streamlit_webrtc import webrtc_streamer, RTCConfiguration, WebRtcMode
 
 # 1. PAGE SETUP (Vision AI Professional Edition)
 st.set_page_config(page_title="VISION AI | Professional Biometrics", page_icon="👁️", layout="wide")
