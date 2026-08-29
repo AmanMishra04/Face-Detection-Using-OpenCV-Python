@@ -5,6 +5,7 @@ from PIL import Image
 import os
 import tempfile
 import time
+import threading
 import av
 from streamlit_webrtc import webrtc_streamer, RTCConfiguration, WebRtcMode
 
@@ -117,28 +118,52 @@ st.markdown("""
 # 2. CORE UTILITIES & AI LOADING
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 XML_PATH = os.path.join(BASE_DIR, "haarcascade_frontalface_alt2.xml")
+FALLBACK_XML_PATH = os.path.join(BASE_DIR, "haarcascade_frontalface_default.xml")
 GENDER_MODEL = os.path.join(BASE_DIR, "gender_net.caffemodel")
 GENDER_PROTO = os.path.join(BASE_DIR, "gender_deploy.prototxt")
 GENDER_LIST = ['Male', 'Female']
-MODEL_MEAN_VALUES = (104.0, 117.0, 123.0)
+# Mean values used when the bundled gender model was trained.
+MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+LIVE_FRAME_COUNT = 0
+MODEL_LOCK = threading.Lock()
 
 @st.cache_resource
 def load_ai():
-    face_engine = cv2.CascadeClassifier(XML_PATH) if os.path.exists(XML_PATH) else None
-    gender_engine = cv2.dnn.readNetFromCaffe(GENDER_PROTO, GENDER_MODEL) if os.path.exists(GENDER_MODEL) and os.path.exists(GENDER_PROTO) else None
-    status = "OPERATIONAL" if face_engine and gender_engine else "PARTIAL"
-    return face_engine, gender_engine, status
+    face_engine = None
+    fallback_face_engine = None
+    gender_engine = None
 
-ai_engine, gender_net, ai_status = load_ai()
+    try:
+        cascade_classifier = getattr(cv2, "CascadeClassifier", None)
+        if callable(cascade_classifier) and os.path.exists(XML_PATH):
+            face_engine = cascade_classifier(XML_PATH)
+        if callable(cascade_classifier) and os.path.exists(FALLBACK_XML_PATH):
+            fallback_face_engine = cascade_classifier(FALLBACK_XML_PATH)
+
+        dnn_module = getattr(cv2, "dnn", None)
+        read_net = getattr(dnn_module, "readNetFromCaffe", None)
+        if callable(read_net) and os.path.exists(GENDER_MODEL) and os.path.exists(GENDER_PROTO):
+            gender_engine = read_net(GENDER_PROTO, GENDER_MODEL)
+    except Exception:
+        # Keep the dashboard available when an OpenCV wheel is incomplete.
+        face_engine = None
+        gender_engine = None
+
+    status = "OPERATIONAL" if face_engine is not None and gender_engine is not None else "PARTIAL"
+    return face_engine, fallback_face_engine, gender_engine, status
+
+ai_engine, fallback_ai_engine, gender_net, ai_status = load_ai()
 
 # 3. NAVIGATION (WING STRUCTURE)
+SENS = 1.1
+STAB = 5
 st.sidebar.markdown("<div class='creator-badge'>CREATED BY AMAN MISHRA</div>", unsafe_allow_html=True)
 st.sidebar.markdown(f"<h2>VISION AI</h2>", unsafe_allow_html=True)
 mission_wing = st.sidebar.radio("SYSTEM WING", ["Intelligence Dashboard", "Detection Laboratory"])
 
 if mission_wing == "Detection Laboratory":
     st.sidebar.markdown("---")
-    tool_select = st.sidebar.selectbox("OPERATIONAL TOOL", ["Image Recognizer", "Live Sentinel", "Archive Scanner"])
+    tool_select = st.sidebar.selectbox("OPERATIONAL TOOL", ["Image Recognizer", "Live Video Detection", "In Video Detector"])
     SENS = st.sidebar.slider("SENSITIVITY", 1.05, 1.4, 1.1)
     STAB = st.sidebar.slider("STABILITY", 1, 15, 7)
 else:
@@ -163,8 +188,8 @@ def draw_pro_box(img, x, y, w, h, gender_label="ANALYZING..."):
 def analyze_gender(img, x, y, w, h):
     if gender_net is None: return "UNKNOWN"
     try:
-        # Extract face ROI with padding
-        padding = 20
+        # Keep the model input focused on the detected face.
+        padding = max(4, int(min(w, h) * 0.15))
         face_img = img[max(0, y-padding):min(y+h+padding, img.shape[0]), 
                        max(0, x-padding):min(x+w+padding, img.shape[1])]
         if face_img.size == 0: return "UNKNOWN"
@@ -172,18 +197,78 @@ def analyze_gender(img, x, y, w, h):
         blob = cv2.dnn.blobFromImage(face_img, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False)
         gender_net.setInput(blob)
         gender_preds = gender_net.forward()
-        return GENDER_LIST[gender_preds[0].argmax()]
+        probabilities = gender_preds[0]
+        confidence = float(probabilities.max())
+        if confidence < 0.60:
+            return "UNCERTAIN"
+        return GENDER_LIST[int(probabilities.argmax())]
     except:
         return "ERROR"
 
-def video_frame_callback(frame):
-    img = frame.to_ndarray(format="bgr24")
+def detect_faces(img, min_size=(40, 40)):
+    if ai_engine is None and fallback_ai_engine is None:
+        return []
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.equalizeHist(gray)
+    neighbors = max(3, min(STAB, 5))
+    faces = ()
     if ai_engine is not None:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        detections = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(60, 60))
-        for (fx, fy, fw, fh) in detections:
-            gender = analyze_gender(img, fx, fy, fw, fh)
-            draw_pro_box(img, fx, fy, fw, fh, gender.upper())
+        faces = ai_engine.detectMultiScale(
+            gray, scaleFactor=SENS, minNeighbors=neighbors, minSize=min_size
+        )
+    if len(faces) == 0 and fallback_ai_engine is not None:
+        faces = fallback_ai_engine.detectMultiScale(
+            gray, scaleFactor=SENS, minNeighbors=neighbors, minSize=min_size
+        )
+    if len(faces) == 0 and ai_engine is not None:
+        faces = ai_engine.detectMultiScale(
+            gray, scaleFactor=1.05, minNeighbors=3, minSize=min_size
+        )
+    return faces
+
+def video_frame_callback(frame):
+    global LIVE_FRAME_COUNT
+
+    try:
+        img = frame.to_ndarray(format="bgr24")
+        img = np.ascontiguousarray(img, dtype=np.uint8)
+    except Exception:
+        return frame
+
+    try:
+        LIVE_FRAME_COUNT += 1
+        if ai_engine is not None and LIVE_FRAME_COUNT % 3 == 0:
+            height, width = img.shape[:2]
+            detection_width = min(width, 640)
+            detection_scale = detection_width / width
+            detection_img = cv2.resize(
+                img, (detection_width, int(height * detection_scale))
+            )
+            detections = detect_faces(
+                detection_img,
+                min_size=(max(30, int(40 * detection_scale)), max(30, int(40 * detection_scale))),
+            )
+            with MODEL_LOCK:
+                for (fx, fy, fw, fh) in detections:
+                    original_x = int(fx / detection_scale)
+                    original_y = int(fy / detection_scale)
+                    original_w = int(fw / detection_scale)
+                    original_h = int(fh / detection_scale)
+                    gender = analyze_gender(
+                        img, original_x, original_y, original_w, original_h
+                    )
+                    draw_pro_box(
+                        img,
+                        original_x,
+                        original_y,
+                        original_w,
+                        original_h,
+                        gender.upper(),
+                    )
+    except Exception:
+        pass
+
     return av.VideoFrame.from_ndarray(img, format="bgr24")
 
 # 5. WING 1: INTELLIGENCE DASHBOARD
@@ -248,7 +333,7 @@ if mission_wing == "Intelligence Dashboard":
         
         1.  **Localization Layer (Haar Cascade)**: High-speed detection of facial bounding boxes using the Viola-Jones framework.
         2.  **Classification Layer (Caffe DNN)**: A deep convolutional neural network (CNN) analyzes the detected facial ROI to identify gender characteristics.
-        3.  **Preprocessing Interface**: Facial crops are normalized to 227x227 pixels with mean subtraction (104, 117, 123) to match the neural network's training environment.
+        3.  **Preprocessing Interface**: Facial crops are normalized to 227x227 pixels with mean subtraction (78.426, 87.769, 114.896) to match the neural network's training environment.
         4.  **Inference Engine**: Real-time forward pass through the gender net for near-instant classification labels.
         """)
         
@@ -268,54 +353,122 @@ elif mission_wing == "Detection Laboratory":
             raw = Image.open(up)
             img_arr = np.array(raw.convert("RGB"))
             bgr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2BGR)
-            if ai_engine:
-                gray = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
-                faces = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(60, 60))
+            if ai_engine or fallback_ai_engine:
+                faces = detect_faces(bgr)
                 for (x, y, w, h) in faces:
                     gender = analyze_gender(bgr, x, y, w, h)
                     draw_pro_box(bgr, x, y, w, h, gender.upper())
                 st.image(bgr, channels="BGR", use_container_width=True)
                 st.success(f"ANALYSIS COMPLETE: {len(faces)} entities localized with Gender ID.")
 
-    elif tool_select == "Live Sentinel":
-        st.info("💡 Grant optical sensor access to initiate real-time biometric tracking with Gender ID.")
-        webrtc_streamer(
-            key="v12-laboratory-gender",
-            mode=WebRtcMode.SENDRECV,
-            rtc_configuration=RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}),
-            video_frame_callback=video_frame_callback,
-            media_stream_constraints={"video": True, "audio": False},
-            async_processing=True,
-        )
+    elif tool_select == "Live Video Detection":
+        st.info("Grant camera access, then capture a frame for face and gender detection.")
+        camera_frame = st.camera_input("Capture video frame", key="live-video-camera")
+        if camera_frame:
+            raw = Image.open(camera_frame)
+            img_arr = np.array(raw.convert("RGB"))
+            bgr = cv2.cvtColor(img_arr, cv2.COLOR_RGB2BGR)
+            faces = []
+            if ai_engine or fallback_ai_engine:
+                faces = detect_faces(bgr)
+                for (x, y, w, h) in faces:
+                    gender = analyze_gender(bgr, x, y, w, h)
+                    draw_pro_box(bgr, x, y, w, h, gender.upper())
+            st.image(bgr, channels="BGR", use_container_width=True)
+            st.success(f"DETECTION COMPLETE: {len(faces)} entities localized.")
 
-    elif tool_select == "Archive Scanner":
+    elif tool_select == "In Video Detector":
         vid = st.file_uploader("Upload Recorded Archive", type=["mp4","mov"])
         if vid:
+            st.subheader("Original Video")
             st.video(vid)
             if st.button("🚀 EXECUTE BIOMETRIC SCAN"):
-                tfile = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+                input_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
                 vid.seek(0)
-                tfile.write(vid.read())
-                cap = cv2.VideoCapture(tfile.name)
+                input_file.write(vid.read())
+                input_file.close()
+                cap = cv2.VideoCapture(input_file.name)
                 progress = st.progress(0)
-                placeholder = st.empty()
                 total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                fps = cap.get(cv2.CAP_PROP_FPS)
+                fps = fps if fps and fps > 0 else 25.0
+                output_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp4')
+                output_file.close()
+                writer = None
                 count = 0
+                detected_count = 0
+                gender_counts = {"MALE": 0, "FEMALE": 0, "UNCERTAIN": 0, "UNKNOWN": 0}
+                tracked_faces = []
+                preview_frames = []
+                missed_frames = 0
                 while cap.isOpened():
                     ret, frame = cap.read()
-                    if not ret: break
+                    if not ret:
+                        break
                     count += 1
-                    if count % 3 != 0: continue 
                     h, w = frame.shape[:2]
                     frame_s = cv2.resize(frame, (480, int(h * 480 / w)))
-                    if ai_engine:
-                        gray = cv2.cvtColor(frame_s, cv2.COLOR_BGR2GRAY)
-                        fcs = ai_engine.detectMultiScale(gray, scaleFactor=SENS, minNeighbors=STAB, minSize=(50, 50))
-                        for (fx, fy, fw, fh) in fcs:
-                            gender = analyze_gender(frame_s, fx, fy, fw, fh)
-                            draw_pro_box(frame_s, fx, fy, fw, fh, gender.upper())
-                    placeholder.image(frame_s, channels="BGR", use_container_width=True)
-                    progress.progress(min(count/total, 1.0))
+                    if writer is None:
+                        output_size = (frame_s.shape[1], frame_s.shape[0])
+                        writer = cv2.VideoWriter(
+                            output_file.name,
+                            cv2.VideoWriter_fourcc(*"mp4v"),
+                            fps,
+                            output_size,
+                        )
+                        if not writer.isOpened():
+                            cap.release()
+                            os.unlink(input_file.name)
+                            st.error("Unable to create the processed video file in this environment.")
+                            st.stop()
+                    if (ai_engine or fallback_ai_engine):
+                        fcs = detect_faces(frame_s, min_size=(20, 20))
+                        if len(fcs) > 0:
+                            tracked_faces = []
+                            for (fx, fy, fw, fh) in fcs:
+                                gender = analyze_gender(frame_s, fx, fy, fw, fh)
+                                gender_label = gender.upper()
+                                tracked_faces.append((fx, fy, fw, fh, gender_label))
+                                detected_count += 1
+                                gender_counts[gender_label] = gender_counts.get(gender_label, 0) + 1
+                            missed_frames = 0
+                        else:
+                            missed_frames += 1
+                            if missed_frames > 5:
+                                tracked_faces = []
+                    for (fx, fy, fw, fh, gender) in tracked_faces:
+                        draw_pro_box(frame_s, fx, fy, fw, fh, gender)
+                    writer.write(frame_s)
+                    if len(preview_frames) < 6 and (count == 1 or count % max(total // 6, 1) == 0):
+                        preview_frames.append(Image.fromarray(cv2.cvtColor(frame_s, cv2.COLOR_BGR2RGB)))
+                    progress.progress(min(count / max(total, 1), 1.0))
                 cap.release()
-                os.unlink(tfile.name)
-                st.success("FORENSIC SCAN COMPLETE WITH GENDER INTELLIGENCE.")
+                if writer is not None:
+                    writer.release()
+                os.unlink(input_file.name)
+                st.success(f"VIDEO DETECTION COMPLETE: {count} frames analyzed.")
+                st.metric("Detected face instances", detected_count)
+                st.write(
+                    "Gender results: "
+                    + ", ".join(f"{label}: {amount}" for label, amount in gender_counts.items() if amount)
+                )
+                if preview_frames:
+                    st.subheader("Detection Preview Frames")
+                    preview_width = max(frame.width for frame in preview_frames)
+                    preview_height = max(frame.height for frame in preview_frames)
+                    contact_sheet = Image.new(
+                        "RGB", (preview_width * 2, preview_height * 3), "black"
+                    )
+                    for index, preview in enumerate(preview_frames):
+                        contact_sheet.paste(preview, ((index % 2) * preview_width, (index // 2) * preview_height))
+                    st.image(contact_sheet, use_container_width=True)
+                st.subheader("Detected Faces and Gender")
+                with open(output_file.name, "rb") as processed_video:
+                    st.video(processed_video.read())
+                with open(output_file.name, "rb") as processed_video:
+                    st.download_button(
+                        "Download detected video",
+                        processed_video.read(),
+                        file_name="detected_faces_gender.mp4",
+                        mime="video/mp4",
+                    )

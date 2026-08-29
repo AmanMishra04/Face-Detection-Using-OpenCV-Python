@@ -7,7 +7,7 @@ FACE_XML = "haarcascade_frontalface_default.xml"
 GENDER_MODEL = "gender_net.caffemodel"
 GENDER_PROTO = "gender_deploy.prototxt"
 GENDER_LIST = ['Male', 'Female']
-MEAN_VALUES = (104.0, 117.0, 123.0)
+MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
 
 # Test Subjects
 SUBJECT_MALE = r"C:\Users\AMAN MISHRA\.gemini\antigravity\brain\53bddd5d-b4d7-4742-819e-ad31a2ad2482\man_test_subject_1774291815128.png"
